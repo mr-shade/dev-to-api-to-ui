@@ -50,34 +50,40 @@ async function getAllPosts() {
 export default async function Home() {
   const posts = await getAllPosts();
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-5xl font-extrabold mb-10 text-center tracking-tight leading-tight">DEV.to Clone</h1>
-      <p className="text-lg text-center text-neutral-500 mb-12 max-w-2xl mx-auto">A beautiful, SEO-optimized, minimalistic Medium-like UI for DEV.to articles. Browse posts and authors, all fetched live from the DEV.to API.</p>
-      <ul className="space-y-10">
+    <main className="mx-auto max-w-5xl px-4 py-16">
+      <header className="mb-14 flex flex-col items-center gap-4">
+        <h1 className="text-5xl font-extrabold tracking-tight text-center bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">DEV.to Clone</h1>
+        <p className="text-lg text-center text-neutral-500 max-w-2xl">A beautiful, SEO-optimized, minimalistic Medium-like UI for DEV.to articles. Browse posts and authors, all fetched live from the DEV.to API.</p>
+      </header>
+      <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
-          <li key={post.id} className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg p-8 border border-neutral-200 dark:border-neutral-800 transition hover:shadow-2xl flex flex-col sm:flex-row gap-8 items-center">
+          <li key={post.id} className="group bg-white dark:bg-neutral-900 rounded-2xl shadow-lg border border-neutral-200 dark:border-neutral-800 transition hover:shadow-2xl flex flex-col overflow-hidden">
             {post.cover_image && (
-              <div className="flex-shrink-0 w-full sm:w-64 aspect-[2.4/1] overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
-                <Image src={post.cover_image} alt={post.title} width={400} height={170} className="object-cover w-full h-full" />
+              <div className="aspect-[2.4/1] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                <Image src={post.cover_image} alt={post.title} width={600} height={250} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
               </div>
             )}
-            <div className="flex-1 w-full">
+            <div className="flex-1 flex flex-col p-6">
               <Link href={`/posts/${post.slug}`} className="block group">
-                <h2 className="text-2xl font-bold mb-2 group-hover:underline leading-snug">{post.title}</h2>
+                <h2 className="text-xl font-bold mb-2 group-hover:underline leading-snug line-clamp-2">{post.title}</h2>
                 <p className="text-neutral-600 dark:text-neutral-300 mb-2 line-clamp-2 text-base">{post.description}</p>
               </Link>
-              <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400 mt-2">
-                <Image src={post.user.profile_image_90 || post.user.profile_image} alt={post.user.name} width={32} height={32} className="rounded-full" />
+              <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400 mt-2 mb-2">
+                <Image src={post.user.profile_image_90 || post.user.profile_image} alt={post.user.name} width={28} height={28} className="rounded-full border border-neutral-200 dark:border-neutral-800" />
                 <Link href={`/authors/${post.user.username}`} className="hover:underline font-medium">{post.user.name}</Link>
                 <span>·</span>
                 <span>{post.readable_publish_date}</span>
                 <span>·</span>
                 <span>{post.reading_time_minutes} min read</span>
               </div>
-              <div className="flex gap-2 mt-3 flex-wrap">
-                {post.tag_list?.map((tag: string) => (
-                  <span key={tag} className="bg-neutral-100 dark:bg-neutral-800 text-xs px-2 py-1 rounded-full">#{tag}</span>
+              <div className="flex gap-2 flex-wrap mt-auto mb-2">
+                {(Array.isArray(post.tag_list) ? post.tag_list : (typeof post.tag_list === 'string' ? post.tag_list.split(',').map((t: string) => t.trim()).filter(Boolean) : [])).map((tag: string) => (
+                  <span key={tag} className="bg-gradient-to-r from-blue-100 to-pink-100 dark:from-blue-900 dark:to-pink-900 text-xs px-2 py-1 rounded-full text-blue-700 dark:text-blue-200 font-semibold">#{tag}</span>
                 ))}
+              </div>
+              <div className="flex gap-4 mt-2 text-xs text-neutral-400">
+                <span>💬 {post.comments_count}</span>
+                <span>❤️ {post.public_reactions_count}</span>
               </div>
             </div>
           </li>
