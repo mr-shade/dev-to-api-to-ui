@@ -50,22 +50,25 @@ async function getAllPosts() {
 export default async function Home() {
   const posts = await getAllPosts();
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-center tracking-tight">DEV.to Clone</h1>
-      <ul className="space-y-8">
+    <main className="mx-auto max-w-3xl px-4 py-16">
+      <h1 className="text-5xl font-extrabold mb-10 text-center tracking-tight leading-tight">DEV.to Clone</h1>
+      <p className="text-lg text-center text-neutral-500 mb-12 max-w-2xl mx-auto">A beautiful, SEO-optimized, minimalistic Medium-like UI for DEV.to articles. Browse posts and authors, all fetched live from the DEV.to API.</p>
+      <ul className="space-y-10">
         {posts.map((post) => (
-          <li key={post.id} className="bg-white dark:bg-neutral-900 rounded-lg shadow p-6 border border-neutral-200 dark:border-neutral-800 transition hover:shadow-lg">
-            <Link href={post.url} target="_blank" rel="noopener noreferrer" className="block group">
-              {post.cover_image && (
-                <div className="mb-4 aspect-[2.4/1] overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800">
-                  <Image src={post.cover_image} alt={post.title} width={800} height={330} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
-                </div>
-              )}
-              <h2 className="text-2xl font-semibold mb-2 group-hover:underline">{post.title}</h2>
-              <p className="text-neutral-600 dark:text-neutral-300 mb-2 line-clamp-2">{post.description}</p>
+          <li key={post.id} className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg p-8 border border-neutral-200 dark:border-neutral-800 transition hover:shadow-2xl flex flex-col sm:flex-row gap-8 items-center">
+            {post.cover_image && (
+              <div className="flex-shrink-0 w-full sm:w-64 aspect-[2.4/1] overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                <Image src={post.cover_image} alt={post.title} width={400} height={170} className="object-cover w-full h-full" />
+              </div>
+            )}
+            <div className="flex-1 w-full">
+              <Link href={`/posts/${post.slug}`} className="block group">
+                <h2 className="text-2xl font-bold mb-2 group-hover:underline leading-snug">{post.title}</h2>
+                <p className="text-neutral-600 dark:text-neutral-300 mb-2 line-clamp-2 text-base">{post.description}</p>
+              </Link>
               <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400 mt-2">
                 <Image src={post.user.profile_image_90 || post.user.profile_image} alt={post.user.name} width={32} height={32} className="rounded-full" />
-                <span>{post.user.name}</span>
+                <Link href={`/authors/${post.user.username}`} className="hover:underline font-medium">{post.user.name}</Link>
                 <span>·</span>
                 <span>{post.readable_publish_date}</span>
                 <span>·</span>
@@ -76,10 +79,30 @@ export default async function Home() {
                   <span key={tag} className="bg-neutral-100 dark:bg-neutral-800 text-xs px-2 py-1 rounded-full">#{tag}</span>
                 ))}
               </div>
-            </Link>
+            </div>
           </li>
         ))}
       </ul>
+      {/* SEO: Structured Data */}
+      <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        name: 'DEV.to Clone',
+        description: 'A beautiful, SEO-optimized, minimalistic Medium-like UI for DEV.to articles.',
+        url: 'https://yourdomain.com/',
+        blogPost: posts.map((post: any) => ({
+          '@type': 'BlogPosting',
+          headline: post.title,
+          image: post.cover_image,
+          author: {
+            '@type': 'Person',
+            name: post.user.name,
+            url: `https://yourdomain.com/authors/${post.user.username}`,
+          },
+          datePublished: post.published_timestamp,
+          url: `https://yourdomain.com/posts/${post.slug}`,
+        })),
+      })}</script>
     </main>
   );
 }
