@@ -10,11 +10,12 @@ interface Organization {
   summary?: string;
 }
 
-export default async function OrgPage({ params }: { params: { orgname: string } }) {
+export default async function OrgPage({ params }: { params: Promise<{ orgname: string }> }) {
+  const { orgname } = await params;
   const [org, users, articles] = await Promise.all([
-    fetchOrganization(params.orgname),
-    fetchOrganizationUsers(params.orgname),
-    fetchOrganizationArticles(params.orgname),
+    fetchOrganization(orgname),
+    fetchOrganizationUsers(orgname),
+    fetchOrganizationArticles(orgname),
   ]);
 
   const organization = org as Organization;

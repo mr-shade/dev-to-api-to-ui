@@ -4,9 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export async function generateMetadata(props: { params: { slug: string } }): Promise<Metadata> {
-    const { params } = props;
-    const slug = await params.slug;
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await props.params;
     const posts = await fetchAllArticles();
     const post = Array.isArray(posts) ? posts.find((p: any) => p.slug === slug) : null;
     if (!post) return {};
@@ -37,9 +36,8 @@ function normalizeTags(tag_list: any, tags: any): string[] {
     return [];
 }
 
-export default async function PostPage(props: { params: { slug: string } }) {
-  const { params } = props;
-  const slug = await params.slug;
+export default async function PostPage(props: { params: Promise<{ slug: string }> }) {
+    const { slug } = await props.params;
   const posts = await fetchAllArticles();
   const post = Array.isArray(posts) ? posts.find((p: any) => p.slug === slug) : null;
   if (!post) return notFound();

@@ -4,9 +4,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata(props: { params: { tag: string } }): Promise<Metadata> {
-  const { params } = props;
-  const tag = await params.tag;
+export async function generateMetadata(props: { params: Promise<{ tag: string }> }): Promise<Metadata> {
+    const { tag } = await props.params;
   
   return {
     title: `#${tag} - DEV Community`,
@@ -34,9 +33,8 @@ function formatDate(dateString: string) {
   }
 }
 
-export default async function TagPage(props: { params: { tag: string } }) {
-  const { params } = props;
-  const tag = await params.tag;
+export default async function TagPage(props: { params: Promise<{ tag: string }> }) {
+    const { tag } = await props.params;
   
   // Fetch articles and filter by tag
   const allArticles = await fetchAllArticles(1, 100).catch(() => []);

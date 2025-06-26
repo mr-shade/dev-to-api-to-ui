@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: { username: string } }): Promise<Metadata> {
-    const posts = await fetchUserArticles(params.username);
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
+    const { username } = await params;
+    const posts = await fetchUserArticles(username);
     const user = Array.isArray(posts) && posts.length > 0 ? posts[0].user : null;
     if (!user) return {};
     return {
@@ -25,8 +26,9 @@ export async function generateMetadata({ params }: { params: { username: string 
     };
 }
 
-export default async function AuthorPage({ params }: { params: { username: string } }) {
-    const posts = await fetchUserArticles(params.username);
+export default async function AuthorPage({ params }: { params: Promise<{ username: string }> }) {
+    const { username } = await params;
+    const posts = await fetchUserArticles(username);
     if (!Array.isArray(posts) || posts.length === 0) return <div className="text-center py-20">No articles found for this author.</div>;
     const user = posts[0].user;
     return (
