@@ -56,6 +56,24 @@ export async function fetchUserArticles(username: string, page = 1, perPage = 30
 }
 
 // Users APIs
+export async function fetchUsers(page: number = 1, per_page: number = 1000) {
+  const res = await fetch(`https://dev.to/api/users?page=${page}&per_page=${per_page}`, {
+    headers: { 'accept': 'application/vnd.forem.api-v1+json' },
+    next: { revalidate: 300 },
+  });
+  if (!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+}
+
+export async function fetchUsers(page: number = 1, per_page: number = 1000) {
+  const res = await fetch(`https://dev.to/api/users?page=${page}&per_page=${per_page}`, {
+    headers: { 'accept': 'application/vnd.forem.api-v1+json' },
+    next: { revalidate: 300 },
+  });
+  if (!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+}
+
 export async function fetchUser(id: string) {
     const res = await fetch(`https://dev.to/api/users/${id}`, {
         headers: { 'accept': 'application/vnd.forem.api-v1+json' },
